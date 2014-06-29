@@ -1,0 +1,131 @@
+Content-Type: multipart/mixed; boundary="==9ec1dca1cc6341a5bd0fbe6956f33eb1=="
+
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/admin
+Content-Length: 952
+Content-MD5: vEMKwohEHGruuX5TfOKyqg==
+Content-Type: application/json;charset=utf-8
+ETag: "1-db1d17e4b34dd7acbb9849f1ec399092"
+
+{"language": "javascript", "views": {"count_doc_types": {"map": "function(doc) { emit(doc.type, 1); }", "reduce": "_sum"}}, "validate_doc_update": "function(newDoc, oldDoc, userCtx) {   function require(field, message) {     message = 'Document must have a ' + field; if (!newDoc[field]) throw({forbidden : 'Document must have a ' + field}); };if (newDoc.type == 'session') {require('name');require('shortName');require('keyword');require('creator');}if (newDoc.type == 'interposed_question') {require('sessionId');require('text');} }", "_rev": "1-db1d17e4b34dd7acbb9849f1ec399092", "_id": "_design/admin", "shows": {"test": "function(doc, req){return {body: 'Hallo' + doc.possibleAnswers}}", "example": "function(doc, req) {var body = '<ul>';doc.possibleAnswers.forEach(function(pA){body += '<li>' + pA.text + '</li>';});body += '</ul';return {body : body,headers : {'Content-Type' : 'text/html','X-My-Own-Header': 'you can set your own headers'}}}"}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/answer
+Content-Length: 2017
+Content-MD5: 3kFYNrQuDVqUMRqr+E5sLQ==
+Content-Type: application/json;charset=utf-8
+ETag: "1-9292432825c6670045923540dce5d26e"
+
+{"_rev": "1-9292432825c6670045923540dce5d26e", "_id": "_design/answer", "language": "javascript", "views": {"by_user_and_session": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.user, doc.sessionId], { questionId: doc.questionId, answerText: doc.answerText, answerSubject: doc.answerSubject, piRound: doc.piRound}); }}"}, "by_session": {"map": "function(doc) { if (doc.type == 'skill_question') { emit(doc.sessionId, doc);  } else if (doc.type == 'skill_question_answer') { emit([doc.sessionId, 1, doc.user], doc.answerText); }}"}, "by_user_and_session_full": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.user, doc.sessionId], doc); }}"}, "unanswered": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit(doc.sessionId, {user: doc.user, questionId: doc.questionId});  }  if (doc.type == 'skill_question') { emit(doc.sessionId, doc); }}"}, "by_session_and_question": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.sessionId, doc.questionId], doc.user); }}"}, "variant_by_user": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.user, doc.sessionId, doc.questionVariant], doc.questionId); }}"}, "cleanup": {"map": "function(doc) {if (doc.type == 'skill_question_answer') { emit(doc.questionId, doc._rev);}}"}, "unanswered2": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.sessionId, doc.user], {user: doc.user, questionId: doc.questionId}); } if (doc.type == 'skill_question') { emit(doc.sessionId, doc); }}"}, "by_question_and_user": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.questionId, doc.user], doc); }}"}, "by_user": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.user, doc.sessionId], doc.questionId); }}"}, "by_question_and_user_and_piround": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.questionId, doc.user, doc.piRound], doc); }}"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/food_vote
+Content-Length: 344
+Content-MD5: 6H4oLIzPPS6rqvoX/H6K1w==
+Content-Type: application/json;charset=utf-8
+ETag: "1-33df509930d1a845df9898d912717338"
+
+{"_rev": "1-33df509930d1a845df9898d912717338", "_id": "_design/food_vote", "language": "javascript", "views": {"count_by_day": {"map": "function(doc) { if(doc.type == 'food_vote') emit([doc.day, doc.name], doc); }", "reduce": "_count"}, "get_user_vote": {"map": "function(doc) { if(doc.type == 'food_vote') emit([doc.day, doc.user], doc); }"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/interposed_question
+Content-Length: 665
+Content-MD5: IqEfg8uYj+FjMIDDTg1e8A==
+Content-Type: application/json;charset=utf-8
+ETag: "1-a017ef73a455878359853fe078e91695"
+
+{"_rev": "1-a017ef73a455878359853fe078e91695", "_id": "_design/interposed_question", "language": "javascript", "views": {"by_session": {"map": "function(doc) { if (doc.type == 'interposed_question') { emit(doc.sessionId, {subject: doc.subject,timestamp: doc.timestamp,rev: doc._rev, read: doc.read}); }}"}, "count_by_session": {"map": "function(doc) { if (doc.type == 'interposed_question') { emit(doc.sessionId, doc); }}", "reduce": "_count"}, "count_by_session_reading": {"map": "function(doc) { if (doc.type == 'interposed_question') { if (doc.read) { emit([doc.sessionId, 'read'], doc); } else { emit([doc.sessionId, 'unread'], doc); }}}", "reduce": "_count"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/learning_progress
+Content-Length: 1942
+Content-MD5: KLUxcyUWajc8tTvk2WDafA==
+Content-Type: application/json;charset=utf-8
+ETag: "1-069723dd7f3321c957f20d2582dee128"
+
+{"_rev": "1-069723dd7f3321c957f20d2582dee128", "_id": "_design/learning_progress", "language": "javascript", "views": {"course_value": {"map": "function(doc) { if (doc.type === 'skill_question_answer') { emit(doc.sessionId, doc.questionValue || 0); } }", "reduce": "_sum"}, "maximum_value": {"map": "function(doc) {/*The question's value is determined by the maximum of all possibleAnswer values. We assume that a correct answer is assigned a positive value, while a negative value suggests a wrong answer. The goal then is to get the highest possible value. This leaves us with two cases:\n\t1) On any single choice question, the value is the maximum of all possibleAnswer values.\n\t2) On a multiple choice question, we add up all positive values.\nSince the question's author could mark certain answers as 'correct', we will consider that as well: The three cases above are applied only to 'correct' answers, if they are available.*/\nvar value = 0, correctAnswers = [], answers = [], positiveAnswers = []; if (doc.type === 'skill_question') { correctAnswers = doc.possibleAnswers.filter(function(answer) { return answer.correct; }); // if correct answers are not available, use the full 'possibleAnswers' array\nanswers = correctAnswers.length === 0 ? doc.possibleAnswers : correctAnswers; answers = answers.map(function(answer) { return answer.value || 0; }); // find the maximum value\nvalue = Math.max.apply(null, answers);// special case for multiple choice question: add up all positive answers.\n if (doc.questionType === 'mc') { positiveAnswers = answers.filter(function(val) { return val >= 0; }); if (positiveAnswers.length > 0) { value = positiveAnswers.reduce(function(prev, cur) { return prev + cur; }); } } emit(doc.sessionId, value); } }", "reduce": "_sum"}, "user_value": {"map": "function(doc) { if (doc.type === 'skill_question_answer') { emit([doc.sessionId, doc.user], doc.questionValue || 0); } }", "reduce": "_sum"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/logged_in
+Content-Length: 734
+Content-MD5: rNPMYBH6+ZgtCePuYOvt2A==
+Content-Type: application/json;charset=utf-8
+ETag: "1-710ab8d9bd6bf1c3ec76f88bb006805b"
+
+{"_rev": "1-710ab8d9bd6bf1c3ec76f88bb006805b", "_id": "_design/logged_in", "language": "javascript", "views": {"count": {"map": "function(doc) { if (doc.type == 'logged_in'){ emit([doc.sessionId, doc.timestamp], 1); }}", "reduce": "_count"}, "visited_sessions_by_user": {"map": "function(doc) { if(doc.type == 'logged_in') { emit(doc.user, doc.visitedSessions); }}"}, "all": {"map": "function(doc) { if (doc.type == 'logged_in'){ emit(doc.user, doc); }}"}, "cleanup": {"map": "function(doc) { if (doc.type == 'logged_in' && doc.user == null){ emit(doc.user, doc._rev); }}"}, "by_and_only_timestamp_and_username": {"map": "function(doc) { if (doc.type == 'logged_in' && doc.user != null ){ emit([doc.timestamp, doc.user], null); }}"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/session
+Content-Length: 883
+Content-MD5: TdqOLqlmK9u2HqUQoO65bg==
+Content-Type: application/json;charset=utf-8
+ETag: "1-0060a4686d9f16eca0c2a7a56729338a"
+
+{"_rev": "1-0060a4686d9f16eca0c2a7a56729338a", "_id": "_design/session", "language": "javascript", "views": {"count": {"map": "function(doc) { if(doc.type == 'session') emit('sessions', doc); }", "reduce": "function(keys, values){ return ('sessions', values.length); }"}, "all": {"map": "function(doc) { if(doc.type == 'session') emit(null, doc); }"}, "by_id": {"map": "function(doc) { if(doc.type == 'session') emit(doc._id, doc); }"}, "by_creator": {"map": "function(doc) { if(doc.type == 'session') emit([doc.creator, doc.name], {shortName: doc.shortName, keyword: doc.keyword, active: doc.active}); }"}, "by_keyword": {"map": "function(doc) { if(doc.type == 'session') emit(doc.keyword, doc); }"}, "is_active": {"map": "function(doc) { if(doc.type == 'session') emit(doc._id, doc.active); }"}, "getIds": {"map": "function(doc) { if(doc.type == 'session') emit(doc.keyword); }"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/skill_question
+Content-Length: 6736
+Content-MD5: fzYCtw7CFJbs3hAeC5wFCA==
+Content-Type: application/json;charset=utf-8
+ETag: "1-5c31c5feb457e12b8475b542fd2ab994"
+
+{"_rev": "1-5c31c5feb457e12b8475b542fd2ab994", "_id": "_design/skill_question", "language": "javascript", "views": {"for_delete": {"map": "function(doc) { if (doc.type == 'skill_question') { emit(doc.sessionId, {_id: doc._id, _rev: doc._rev}); }}"}, "flashcard_count_by_session": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'flashcard') { emit(doc.sessionId, doc); }}", "reduce": "_count"}, "by_session_for_all": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.active == 1 && (!doc.releasedFor || doc.releasedFor == 'all')) { emit(doc.sessionId, {subject: doc.subject,text: doc.text,possibleAnswers: doc.possibleAnswers,duration: doc.duration,number: doc.number,questionType: doc.questionType,showAnswer: doc.showAnswer,showStatistic: doc.showStatistic}); }}"}, "by_session_only_id_for_all": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.active == 1 && (!doc.releasedFor || doc.releasedFor == 'all')) { emit(doc.sessionId, null); }}"}, "count_answers": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.questionId, doc.answerText, doc.answerSubject], 1); }}", "reduce": "_sum"}, "count_answers_by_question": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit(doc.questionId, doc); } }", "reduce": "_count"}, "by_session": {"map": "function(doc) { if (doc.type == 'skill_question') { emit([doc.sessionId, doc.subject], doc); }}"}, "preparation_question_by_session_for_thm": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'preparation' && doc.active == 1) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "flashcard_by_session": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'flashcard') { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "preparation_question_by_session_for_all": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'preparation' && doc.active == 1 && (!doc.releasedFor || doc.releasedFor == 'all')) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "by_session_for_thm": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.active == 1) { emit(doc.sessionId, {subject: doc.subject,text: doc.text,possibleAnswers: doc.possibleAnswers,duration: doc.duration,number: doc.number,questionType: doc.questionType,showAnswer: doc.showAnswer,showStatistic: doc.showStatistic}); }}"}, "by_session_for_all_full": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.active == 1 && (!doc.releasedFor || doc.releasedFor == 'all')) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "lecture_question_by_session": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'lecture') { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "preparation_question_count_by_session": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'preparation') { emit(doc.sessionId, doc); }}", "reduce": "_count"}, "flashcard_by_session_for_all": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'flashcard' && doc.active == 1 && (!doc.releasedFor || doc.releasedFor == 'all')) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "count_answers_by_question_and_piround": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.questionId, doc.piRound, doc.answerText], 1); }}", "reduce": "_sum"}, "preparation_question_by_session": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'preparation') { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "lecture_question_by_session_for_thm": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'lecture' && doc.active == 1) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "count_by_session": {"map": "function(doc) { if (doc.type == 'skill_question') { emit(doc.sessionId, doc); }}", "reduce": "_count"}, "count_abstention_answers_by_question": {"map": "function(doc) { if (doc.type == 'skill_question_answer' && doc.abstention) { emit(doc.questionId, doc); } }", "reduce": "_count"}, "by_session_for_thm_full": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.active == 1) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "by_session_sorted_by_subject_and_text": {"map": "function(doc) { if (doc.type == 'skill_question') { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "flashcard_by_session_for_thm": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'flashcard' && doc.active == 1) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "lecture_question_count_by_session": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'lecture') { emit(doc.sessionId, doc); }}", "reduce": "_count"}, "count_total_answers_by_question_and_piround": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.questionId, doc.piRound], 1); }}", "reduce": "_sum"}, "freetext_answers": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit(doc.questionId, { _id: doc._id, _rev: doc._rev, timestamp: doc.timestamp, subject: doc.answerSubject, text: doc.answerText }); } }"}, "count_answers_by_session_and_question_variant": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit([doc.sessionId, doc.questionVariant], doc); } }", "reduce": "_count"}, "freetext_answers_full": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit(doc.questionId, doc); } }"}, "count_answers_by_session": {"map": "function(doc) { if (doc.type == 'skill_question_answer') { emit(doc.sessionId, doc); } }", "reduce": "_count"}, "by_id": {"map": "function(doc) { if (doc.type == 'skill_question') emit(doc._id, doc); }"}, "lecture_question_by_session_for_all": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.questionVariant == 'lecture' && doc.active == 1 && (!doc.releasedFor || doc.releasedFor == 'all')) { emit([doc.sessionId, doc.subject, doc.text], doc); }}"}, "by_session_only_id_for_thm": {"map": "function(doc) { if (doc.type == 'skill_question' && doc.active == 1) { emit(doc.sessionId, null); }}"}, "user_answers": {"map": "function(doc) { if (doc.type == 'question') { emit([doc._id], doc); } else if (doc.type == 'answer') { emit([doc.questionId, 1, doc.text], doc); }}"}, "max_number_in_session": {"map": "function(doc) { if (doc.type == 'skill_question') emit(doc.sessionId, doc.number); }", "reduce": "function(keys, values){ var max = 0; values.forEach(function(value){ if(value > max) max = value; }); return max;}"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/statistic
+Content-Length: 892
+Content-MD5: PNWA7FHx/Rwm+1NgOjjyRw==
+Content-Type: application/json;charset=utf-8
+ETag: "1-15b385e1add7e92c538225ea1106b9a2"
+
+{"_rev": "1-15b385e1add7e92c538225ea1106b9a2", "_id": "_design/statistic", "language": "javascript", "views": {"count_sessions": {"map": "function(doc) { if (doc.type == 'session') { if(doc.active == 1){ emit('openSessions', 1); } else { emit('closedSessions', 1);}} if (doc.type == 'skill_question') { emit('questions', 1); } if (doc.type == 'skill_question_answer') { emit('answers', 1);  }}", "reduce": "_count"}, "count_active_users_with_session": {"map": "function(doc) { if (doc.type == 'logged_in' && doc.sessionId){ emit(doc.timestamp, doc.sessionId); }}", "reduce": "_count"}, "count_active_users": {"map": "function(doc) { if (doc.type == 'logged_in'){ emit(doc.timestamp, 1); }}", "reduce": "_count"}, "count_active_sessions": {"map": "function(doc) { if (doc.type == 'session' && doc.active == 1 && doc.lastOwnerActivity) { emit(doc.lastOwnerActivity, 1); }}", "reduce": "_sum"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/understanding
+Content-Length: 998
+Content-MD5: jyiszkffyKdcKLPDL/UZhg==
+Content-Type: application/json;charset=utf-8
+ETag: "1-2d5aae341b73dd4dac79109d3e88af60"
+
+{"_rev": "1-2d5aae341b73dd4dac79109d3e88af60", "_id": "_design/understanding", "language": "javascript", "views": {"by_user": {"map": "function(doc) { if (doc.type == 'understanding'){ emit([doc.sessionId, doc.user], doc); }}"}, "cleanup": {"map": "function(doc) { if (doc.type == 'understanding'){ emit(doc.timestamp, doc._rev); }}"}, "by_session": {"map": "function(doc) { if (doc.type == 'understanding'){ emit([doc.sessionId, doc.value], 1); }}", "reduce": "_sum"}, "count_by_session": {"map": "function(doc) { if (doc.type == 'understanding'){ emit(doc.sessionId, 1);}}", "reduce": "_count"}, "avg_by_session": {"map": "function(doc) { if (doc.type == 'understanding'){ switch(doc.value){ case 'Bitte schneller': emit(doc.sessionId, 4); break; case 'Kann folgen': emit(doc.sessionId, 3); break; case 'Zu schnell': emit(doc.sessionId, 2); break; case 'Nicht mehr dabei': emit(doc.sessionId, 1); break; }}}", "reduce": "function(keys, values) { return Math.round(sum(values)/values.length);}"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: _design/user_ranking
+Content-Length: 493
+Content-MD5: 2uzNjmBcWVGwWdF2mNedFQ==
+Content-Type: application/json;charset=utf-8
+ETag: "1-0ba523013a76d6830fc4cdef141f6a39"
+
+{"_rev": "1-0ba523013a76d6830fc4cdef141f6a39", "_id": "_design/user_ranking", "language": "javascript", "views": {"by_session_and_user": {"map": "function(doc) { if (doc.type == 'user_ranking') { emit([doc.sessionId, doc.user], doc); }}"}, "count_by_session": {"map": "function(doc) { if (doc.type == 'user_ranking') { emit(doc.sessionId, doc.rank); }}"}, "count_by_session_and_user": {"map": "function(doc) { if (doc.type == 'user_ranking') { emit([doc.sessionId, doc.user], doc.rank); }}"}}}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: afde98ccc91d149b75e0a58133000826
+Content-Length: 326
+Content-MD5: mZzAZp1Hhqm6CRFoU9Wduw==
+Content-Type: application/json;charset=utf-8
+ETag: "28-0cfb9fd2719b8fe26f7979c44e22e6c5"
+
+{"courseType": "", "keyword": "11957025", "creator": "Guest07116bc961", "courseId": "", "_rev": "28-0cfb9fd2719b8fe26f7979c44e22e6c5", "courseSession": false, "lastOwnerActivity": 1401799494083, "active": true, "shortName": "vagrant", "_id": "afde98ccc91d149b75e0a58133000826", "type": "session", "name": "Vagrant and Puppet"}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: afde98ccc91d149b75e0a581330014c5
+Content-Length: 334
+Content-MD5: uCSA/QMmxQtI1tPp+JR6dQ==
+Content-Type: application/json;charset=utf-8
+ETag: "27-b9f87e3e93ef337c1e1ed4ed240bb506"
+
+{"visitedSessions": [{"_id": "afde98ccc91d149b75e0a58133000826", "name": "Vagrant and Puppet", "keyword": "11957025"}], "user": "Guest07116bc961", "timestamp": 1401799494173, "_rev": "27-b9f87e3e93ef337c1e1ed4ed240bb506", "_id": "afde98ccc91d149b75e0a581330014c5", "type": "logged_in", "sessionId": "afde98ccc91d149b75e0a58133000826"}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: afde98ccc91d149b75e0a58133001aba
+Content-Length: 722
+Content-MD5: Jk4EhT8ebAR059dn9YZzqA==
+Content-Type: application/json;charset=utf-8
+ETag: "1-e6678d60e4ecb01bb004ba4bdb7c3c01"
+
+{"showAnswer": false, "abstention": true, "text": "Which host platforms are supported by Vagrant?", "_rev": "1-e6678d60e4ecb01bb004ba4bdb7c3c01", "number": 0, "noCorrect": false, "zoomLvl": 0, "gridSize": 0, "active": true, "subject": "Vagrant: Host Platforms", "questionType": "mc", "releasedFor": "all", "piRound": 1, "offsetX": 0, "offsetY": 0, "questionVariant": "preparation", "sessionId": "afde98ccc91d149b75e0a58133000826", "possibleAnswers": [{"text": "Mac OS X", "correct": true, "value": 0, "id": ""}, {"text": "Windows", "correct": true, "value": 0, "id": ""}, {"text": "Linux", "correct": true, "value": 0, "id": ""}], "showStatistic": true, "_id": "afde98ccc91d149b75e0a58133001aba", "type": "skill_question"}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: afde98ccc91d149b75e0a58133001eb3
+Content-Length: 734
+Content-MD5: Qy8Fn31q2y8unR8/JaTJNA==
+Content-Type: application/json;charset=utf-8
+ETag: "1-93c5e77fe46435736402a04b74590563"
+
+{"showAnswer": false, "abstention": true, "text": "What is Puppet?", "_rev": "1-93c5e77fe46435736402a04b74590563", "number": 0, "noCorrect": false, "zoomLvl": 0, "gridSize": 0, "active": true, "subject": "Puppet", "questionType": "abcd", "releasedFor": "all", "piRound": 1, "offsetX": 0, "offsetY": 0, "questionVariant": "preparation", "sessionId": "afde98ccc91d149b75e0a58133000826", "possibleAnswers": [{"text": "A: A text editor", "correct": false, "value": 0, "id": "A"}, {"text": "B: A configuration management tool", "correct": true, "value": 0, "id": "B"}, {"text": "C: A scripting language", "correct": false, "value": 0, "id": "C"}], "showStatistic": true, "_id": "afde98ccc91d149b75e0a58133001eb3", "type": "skill_question"}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==
+Content-ID: afde98ccc91d149b75e0a581330021c5
+Content-Length: 636
+Content-MD5: F7iBlFjmnlhh9TaGT8mL5Q==
+Content-Type: application/json;charset=utf-8
+ETag: "1-dd317351eaa6a43a9c2fb54da080b457"
+
+{"showAnswer": false, "abstention": true, "text": "Do you like Vagrant and Puppet?", "_rev": "1-dd317351eaa6a43a9c2fb54da080b457", "number": 0, "noCorrect": true, "zoomLvl": 0, "gridSize": 0, "active": true, "subject": "Personal Opinion", "questionType": "yesno", "releasedFor": "all", "piRound": 1, "offsetX": 0, "offsetY": 0, "questionVariant": "preparation", "sessionId": "afde98ccc91d149b75e0a58133000826", "possibleAnswers": [{"text": "Yes", "correct": false, "value": 0, "id": ""}, {"text": "No", "correct": false, "value": 0, "id": ""}], "showStatistic": true, "_id": "afde98ccc91d149b75e0a581330021c5", "type": "skill_question"}
+--==9ec1dca1cc6341a5bd0fbe6956f33eb1==--
